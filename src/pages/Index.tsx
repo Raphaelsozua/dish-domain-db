@@ -45,15 +45,24 @@ const Index = () => {
                 
                 <div className="bg-primary/10 p-4 rounded-lg">
                   <h3 className="font-semibold text-bakery-brown mb-2">
-                    Para Restaurantes
+                    Para Administradores
                   </h3>
                   <ul className="text-sm text-muted-foreground space-y-1">
-                    <li>• API REST completa</li>
-                    <li>• Gerenciar produtos</li>
-                    <li>• Controlar categorias</li>
-                    <li>• Personalizar tema</li>
-                    <li>• Sistema de avaliações</li>
+                    <li>• Painel administrativo completo</li>
+                    <li>• Gerenciar produtos e categorias</li>
+                    <li>• Personalizar informações</li>
+                    <li>• Controlar promoções</li>
+                    <li>• Visualizar avaliações</li>
                   </ul>
+                  <div className="mt-3">
+                    <a 
+                      href="/admin/login" 
+                      className="inline-flex items-center gap-2 bg-bakery-brown hover:bg-bakery-brown/90 text-bakery-brown-foreground px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                    >
+                      <span>🔐</span>
+                      Acesso Admin
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
