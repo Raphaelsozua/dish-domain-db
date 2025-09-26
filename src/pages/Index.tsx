@@ -22,7 +22,7 @@ const Index = () => {
             
             <div className="space-y-4">
               <a 
-                href="/menu/restaurante-teste" 
+                href="/menu" 
                 className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3 rounded-lg font-medium transition-colors"
               >
                 <span>🍞</span>

@@ -1,5 +1,4 @@
 import { useState, useMemo } from 'react';
-import { useParams } from 'react-router-dom';
 import { Phone, Instagram, Facebook, MessageCircle, Star, Clock } from 'lucide-react';
 import { MenuHeader } from '@/components/menu/MenuHeader';
 import { PromoBanner } from '@/components/menu/PromoBanner';
@@ -14,17 +13,16 @@ import { useRestaurantInfo, useCategories, useProducts, useReviews, useSubmitRev
 import { useToast } from '@/hooks/use-toast';
 
 export default function RestaurantMenu() {
-  const { slug } = useParams<{ slug: string }>();
   const [activeTab, setActiveTab] = useState<'menu' | 'contacts' | 'reviews'>('menu');
   const [selectedCategory, setSelectedCategory] = useState<string>();
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const { toast } = useToast();
 
-  const { data: restaurant, isLoading: loadingRestaurant } = useRestaurantInfo(slug!);
-  const { data: categories = [], isLoading: loadingCategories } = useCategories(slug!);
-  const { data: allProducts = [], isLoading: loadingProducts } = useProducts(slug!);
-  const { data: reviews = [], isLoading: loadingReviews } = useReviews(slug!);
+  const { data: restaurant, isLoading: loadingRestaurant } = useRestaurantInfo();
+  const { data: categories = [], isLoading: loadingCategories } = useCategories();
+  const { data: allProducts = [], isLoading: loadingProducts } = useProducts();
+  const { data: reviews = [], isLoading: loadingReviews } = useReviews();
   const submitReview = useSubmitReview();
 
   // Filter products based on selected category
@@ -55,12 +53,20 @@ export default function RestaurantMenu() {
 
   const handleReviewSubmit = async (reviewData: any) => {
     try {
-      await submitReview.mutateAsync({ slug: slug!, review: reviewData });
+      await submitReview.mutateAsync({ review: reviewData });
       setReviewModalOpen(false);
       setSelectedProduct(null);
+      toast({
+        title: "Avaliação enviada!",
+        description: "Obrigado pelo seu feedback."
+      });
     } catch (error) {
       console.error('Error submitting review:', error);
-      throw error;
+      toast({
+        title: "Erro ao enviar avaliação",
+        description: "Tente novamente em alguns minutos.",
+        variant: "destructive"
+      });
     }
   };
 
@@ -100,8 +106,8 @@ export default function RestaurantMenu() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold mb-2">Restaurante não encontrado</h1>
-          <p className="text-muted-foreground">Verifique o endereço e tente novamente.</p>
+          <h1 className="text-2xl font-bold mb-2">Bem-vindo ao Cardápio Digital</h1>
+          <p className="text-muted-foreground">Carregando informações do restaurante...</p>
         </div>
       </div>
     );
