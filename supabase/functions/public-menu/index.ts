@@ -11,9 +11,14 @@ async function getRestaurantBySlug(slug: string, supabase: any) {
     .from('restaurants')
     .select('*')
     .eq('slug', slug)
-    .single();
+    .maybeSingle();
 
-  if (error || !restaurant) {
+  if (error) {
+    console.error('Error fetching restaurant:', error);
+    throw new Error('Database error');
+  }
+
+  if (!restaurant) {
     throw new Error('Restaurant not found');
   }
 
@@ -28,7 +33,7 @@ serve(async (req) => {
   try {
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_PUBLISHABLE_KEY') ?? ''
+      Deno.env.get('SUPABASE_ANON_KEY') ?? ''
     );
 
     const url = new URL(req.url);
