@@ -31,10 +31,25 @@ serve(async (req) => {
   }
 
   try {
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? ''
-    );
+    // List all available environment variables for debugging
+    console.log('Available env vars:', Object.keys(Deno.env.toObject()));
+    
+    // Try different possible environment variable names
+    const supabaseUrl = Deno.env.get('SUPABASE_URL') || 
+                       Deno.env.get('_SUPABASE_URL') ||
+                       'https://pxhabmwihhxwznmuvgrb.supabase.co';
+    
+    const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY') || 
+                       Deno.env.get('SUPABASE_PUBLISHABLE_KEY') ||
+                       Deno.env.get('_SUPABASE_ANON_KEY') ||
+                       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4aGFibXdpaGh4d3pubXV2Z3JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4MTc3OTgsImV4cCI6MjA3NDM5Mzc5OH0.Vx5TS8IiPEOdW6VY19-ItsiuI9MmwkRjR5UgmdpxlBA';
+    
+    console.log('Using config:', {
+      url: supabaseUrl,
+      keyPrefix: supabaseKey?.substring(0, 20) + '...'
+    });
+
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
     const url = new URL(req.url);
     const pathParts = url.pathname.split('/').filter(p => p);
