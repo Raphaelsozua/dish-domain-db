@@ -1,46 +1,95 @@
-import { useState, useMemo } from 'react';
-import { mockRestaurant, mockCategories, mockProducts, mockReviews } from '@/data/mockData';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
-// Simplified hooks that return mock data
+const API_BASE = 'https://pxhabmwihhxwznmuvgrb.supabase.co/functions/v1';
+
+// Real API hooks for public menu
 export const useRestaurantInfo = () => {
-  return {
-    data: mockRestaurant,
-    isLoading: false,
-    error: null
-  };
+  return useQuery({
+    queryKey: ['public-restaurant', 'restaurante-teste'],
+    queryFn: async () => {
+      const { data, error } = await supabase.functions.invoke('public-menu', {
+        body: { 
+          action: 'getRestaurant',
+          slug: 'restaurante-teste' 
+        }
+      });
+      
+      if (error) throw error;
+      return data;
+    },
+  });
 };
 
 export const useCategories = () => {
-  return {
-    data: mockCategories,
-    isLoading: false,
-    error: null
-  };
+  return useQuery({
+    queryKey: ['public-categories', 'restaurante-teste'],
+    queryFn: async () => {
+      const { data, error } = await supabase.functions.invoke('public-menu', {
+        body: { 
+          action: 'getCategories',
+          slug: 'restaurante-teste' 
+        }
+      });
+      
+      if (error) throw error;
+      return data || [];
+    },
+  });
 };
 
 export const useProducts = () => {
-  return {
-    data: mockProducts,
-    isLoading: false,
-    error: null
-  };
+  return useQuery({
+    queryKey: ['public-products', 'restaurante-teste'],
+    queryFn: async () => {
+      const { data, error } = await supabase.functions.invoke('public-menu', {
+        body: { 
+          action: 'getProducts',
+          slug: 'restaurante-teste' 
+        }
+      });
+      
+      if (error) throw error;
+      return data || [];
+    },
+  });
 };
 
 export const useReviews = () => {
-  return {
-    data: mockReviews,
-    isLoading: false,
-    error: null
-  };
+  return useQuery({
+    queryKey: ['public-reviews', 'restaurante-teste'],
+    queryFn: async () => {
+      const { data, error } = await supabase.functions.invoke('public-menu', {
+        body: { 
+          action: 'getReviews',
+          slug: 'restaurante-teste' 
+        }
+      });
+      
+      if (error) throw error;
+      return data || [];
+    },
+  });
 };
 
 export const useSubmitReview = () => {
-  return {
-    mutateAsync: async (reviewData: any) => {
-      // Simulate API call
-      console.log('Review submitted:', reviewData);
-      return { success: true };
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (reviewData: any) => {
+      const { data, error } = await supabase.functions.invoke('public-menu', {
+        body: { 
+          action: 'submitReview',
+          slug: 'restaurante-teste',
+          ...reviewData.review
+        }
+      });
+      
+      if (error) throw error;
+      return data;
     },
-    isLoading: false
-  };
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['public-reviews'] });
+    },
+  });
 };

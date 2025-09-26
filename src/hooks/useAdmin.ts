@@ -45,22 +45,34 @@ interface RestaurantInfo {
 
 // Helper function to make authenticated requests
 const makeAuthenticatedRequest = async (url: string, options: RequestInit, token: string) => {
-  const response = await fetch(url, {
-    ...options,
-    headers: {
-      ...options.headers,
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-  });
+    try {
+      const response = await fetch(url, {
+        ...options,
+        headers: {
+          ...options.headers,
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
 
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.error || 'Request failed');
-  }
+      if (!response.ok) {
+        console.error('Request failed:', response.status, response.statusText);
+        let errorMessage = 'Request failed';
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorMessage;
+        } catch (e) {
+          // Response might not be JSON
+        }
+        throw new Error(errorMessage);
+      }
 
-  return response.json();
-};
+      return response.json();
+    } catch (error) {
+      console.error('Network error:', error);
+      throw error;
+    }
+  };
 
 // Restaurant Info
 export const useRestaurantInfo = () => {
@@ -101,6 +113,9 @@ export const useUpdateRestaurantTheme = () => {
       }, token!),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-restaurant'] });
+      queryClient.invalidateQueries({ queryKey: ['public-restaurant'] });
+      queryClient.invalidateQueries({ queryKey: ['public-categories'] });
+      queryClient.invalidateQueries({ queryKey: ['public-products'] });
     },
   });
 };
@@ -128,6 +143,8 @@ export const useCreateCategory = () => {
       }, token!),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-categories'] });
+      queryClient.invalidateQueries({ queryKey: ['public-categories'] });
+      queryClient.invalidateQueries({ queryKey: ['public-products'] });
     },
   });
 };
@@ -144,6 +161,8 @@ export const useUpdateCategory = () => {
       }, token!),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-categories'] });
+      queryClient.invalidateQueries({ queryKey: ['public-categories'] });
+      queryClient.invalidateQueries({ queryKey: ['public-products'] });
     },
   });
 };
@@ -159,6 +178,8 @@ export const useDeleteCategory = () => {
       }, token!),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-categories'] });
+      queryClient.invalidateQueries({ queryKey: ['public-categories'] });
+      queryClient.invalidateQueries({ queryKey: ['public-products'] });
     },
   });
 };
@@ -193,6 +214,7 @@ export const useCreateProduct = () => {
       }, token!),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-products'] });
+      queryClient.invalidateQueries({ queryKey: ['public-products'] });
     },
   });
 };
@@ -209,6 +231,7 @@ export const useUpdateProduct = () => {
       }, token!),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-products'] });
+      queryClient.invalidateQueries({ queryKey: ['public-products'] });
     },
   });
 };
@@ -224,6 +247,7 @@ export const useToggleProductPromotion = () => {
       }, token!),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-products'] });
+      queryClient.invalidateQueries({ queryKey: ['public-products'] });
     },
   });
 };
@@ -239,6 +263,7 @@ export const useDeleteProduct = () => {
       }, token!),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-products'] });
+      queryClient.invalidateQueries({ queryKey: ['public-products'] });
     },
   });
 };
